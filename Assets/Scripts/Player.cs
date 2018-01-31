@@ -5,8 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour {
     [SerializeField] CameraController cameraController;
     [SerializeField] RectTransform tapRect;
-    Vector3 beginTapPos;
-    Vector3 nowTapPos;
+    Vector3 tapPos = Vector3.zero;
 	// Use this for initialization
 	void Start () {
 		
@@ -14,27 +13,25 @@ public class Player : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        TapAction();	
-	}
+        UpdateMouseState();
+    }
 
-    void TapAction() {
-        switch(AppUtil.GetTouch()) {
-            case TouchInfo.Began:
-                beginTapPos = AppUtil.GetTouchPosition();
-                tapRect.position = beginTapPos;
-            break;
-            case TouchInfo.Moved:
-                nowTapPos = AppUtil.GetTouchPosition();
-                var normalizedVec = AppUtil.GetDragDirection(beginTapPos, nowTapPos);
-                var translatedVec = new Vector3(normalizedVec.x, normalizedVec.y, 0);
-                if (Mathf.Abs(translatedVec.x) > Mathf.Abs(translatedVec.y))
-                    translatedVec.y = 0;
-                else translatedVec.x = 0;
-                //Debug.Log("vec:"+translatedVec);
-                cameraController.TranslateOnSphere(translatedVec);
-            break;
-            case TouchInfo.Ended:
-            break;
+    void UpdateMouseState() {
+        if (Input.GetMouseButtonDown(2)) {
+            tapPos = Input.mousePosition;
         }
+
+        MouseDrag(Input.mousePosition);
+    }
+
+    void MouseDrag(Vector3 mousePos) {
+        Vector3 diff = mousePos - tapPos;
+
+        if (Input.GetMouseButton(2))
+            cameraController.Translate(-diff);
+        else if (Input.GetMouseButton(1))
+            cameraController.Rotate(new Vector2(-diff.y, diff.x));
+
+        tapPos = mousePos;
     }
 }

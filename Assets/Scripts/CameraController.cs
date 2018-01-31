@@ -5,69 +5,42 @@ using UnityEngine;
 [RequireComponent(typeof(Camera))]
 public class CameraController : MonoBehaviour {
     [SerializeField] Transform targetTrans;
-    [SerializeField, Range(1, 20)] float moveSpeed = 1f;
+    [SerializeField, Range(0.5f, 5)] float moveSpeed = 1;
+    [SerializeField, Range(0.5f, 5)] float rotateSpeed = 1;
     Camera camera;
-    Transform parent;
     bool played = false;
     Vector3 initPos; //初期位置
-    float viewingAngle; //視野角 ズームイン/アウトで使用
+    float initViewingAngle; //視野角 ズームイン/アウトで使用
     Vector3 centerPos;
-
 
 	// Use this for initialization
 	void Start () {
-        parent = transform.parent;
+        initPos = transform.position;
+        initViewingAngle = camera.fieldOfView;
         camera = GetComponent<Camera>();
         Debug.Log(camera.transform.position);
 	}
-	
-    public void StartControl() {
-        centerPos = GetCenterPos();
-        initPos = transform.position;
-        viewingAngle = camera.fieldOfView;
-    }
-    public void FinishControl() {
-        parent.position = initPos;
-        parent.rotation = Quaternion.Euler(0, 0, 0);
-        transform.position = initPos;
-        transform.rotation = Quaternion.Euler(0, 0, 0);
-        camera.fieldOfView = viewingAngle;
+
+    public void Rotate(Vector2 angle) {
+        transform.RotateAround(transform.position, transform.right, angle.x * rotateSpeed);
+        transform.RotateAround(transform.position, Vector3.up, angle.y * rotateSpeed);
     }
 
-    /// <summary>
-    /// 拡大/縮小
-    /// </summary>
-    /// <param name='amount'>値 ※1~179</param>
+    public void RotateOnZAxis(float angle) {
+        transform.RotateAround(transform.position, transform.forward, angle);
+    }
+
+    public void Translate(Vector3 movement) {
+        transform.Translate(movement * Time.unscaledDeltaTime * moveSpeed);
+    }
+
     public void Zoom(float amount) {
         camera.fieldOfView = amount;
     }
 
-    /// <summary>
-    /// 球面上に移動
-    /// </summary>
-    /// <param name='dragVec'>移動ベクトル</param>
-    public void TranslateOnSphere(Vector3 dragVec) {
-        var horizontal = Vector3.up * dragVec.x;
-        parent.RotateAround(centerPos, horizontal, moveSpeed);
-        var vertical = parent.right * dragVec.y;
-        parent.RotateAround(centerPos, vertical, moveSpeed);
-    }
-
-    /// <summary>
-    /// 回転(z軸)
-    /// </summary>
-    public void Rotate(float amount) {
-        transform.localRotation = Quaternion.Euler(new Vector3(0, 0, amount));
-    }
-
-
-    public Vector3 GetCenterPos() {
-        return targetTrans.position;
-    }
-
-    public void ChangeState() {
-        played = !played;
-        if (played) StartControl();
-        else FinishControl();
+    public void Reset() {
+        transform.position = initPos;
+        transform.rotation = Quaternion.Euler(0, 0, 0);
+        camera.fieldOfView = initViewingAngle;
     }
 }
