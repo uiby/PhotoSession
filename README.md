@@ -11,3 +11,4 @@
 
 ## gitignore
 SD_KohakuChanz-1 > 3Dモデル
+font > フォント
