@@ -34,8 +34,10 @@ public class CameraController : MonoBehaviour {
         camera.fieldOfView = viewingAngle;
     }
 
-    //ズーム
-    // amount: 量
+    /// <summary>
+    /// 拡大/縮小
+    /// </summary>
+    /// <param name='amount'>値 ※1~179</param>
     public void Zoom(float amount) {
         camera.fieldOfView = amount;
     }
@@ -47,9 +49,17 @@ public class CameraController : MonoBehaviour {
     public void TranslateOnSphere(Vector3 dragVec) {
         var horizontal = Vector3.up * dragVec.x;
         parent.RotateAround(centerPos, horizontal, moveSpeed);
-        var vertical = transform.right * dragVec.y;
-        transform.RotateAround(centerPos, vertical, moveSpeed);
+        var vertical = parent.right * dragVec.y;
+        parent.RotateAround(centerPos, vertical, moveSpeed);
     }
+
+    /// <summary>
+    /// 回転(z軸)
+    /// </summary>
+    public void Rotate(float amount) {
+        transform.localRotation = Quaternion.Euler(new Vector3(0, 0, amount));
+    }
+
 
     public Vector3 GetCenterPos() {
         return targetTrans.position;

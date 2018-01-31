@@ -12,9 +12,9 @@ public static class AppUtil
     {
         if (Application.isEditor)
         {
-            if (Input.GetMouseButtonDown(0)) { return TouchInfo.Began; }
-            if (Input.GetMouseButton(0)) { return TouchInfo.Moved; }
-            if (Input.GetMouseButtonUp(0)) { return TouchInfo.Ended; }
+            if (Input.GetMouseButtonDown(1)) { return TouchInfo.Began; }
+            if (Input.GetMouseButton(1)) { return TouchInfo.Moved; }
+            if (Input.GetMouseButtonUp(1)) { return TouchInfo.Ended; }
         }
         else
         {
